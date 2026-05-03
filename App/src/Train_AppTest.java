@@ -4,10 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Test class for Train_App (UC8)
- * Verifies Stream filtering behavior across all scenarios.
+ * Test class for Train_App (UC9)
+ * Verifies Stream groupingBy behavior across all scenarios.
  */
 public class Train_AppTest {
 
@@ -20,78 +21,88 @@ public class Train_AppTest {
         bogies.add(new Train_App.Bogie("Sleeper",     72));
         bogies.add(new Train_App.Bogie("AC Chair",    56));
         bogies.add(new Train_App.Bogie("First Class", 24));
-        bogies.add(new Train_App.Bogie("General",     90));
+        bogies.add(new Train_App.Bogie("Sleeper",     70));
+        bogies.add(new Train_App.Bogie("AC Chair",    60));
     }
 
     @Test
-    void testFilter_CapacityGreaterThanThreshold() {
-        // Bogies with capacity > 70: Sleeper(72), General(90)
-        List<Train_App.Bogie> result =
-                Train_App.filterByCapacity(bogies, 70);
-        assertEquals(2, result.size());
-        assertEquals("Sleeper", result.get(0).name);
-        assertEquals("General", result.get(1).name);
+    void testGrouping_BogiesGroupedByType() {
+        // Bogies with same name must appear under same Map key
+        Map<String, List<Train_App.Bogie>> result =
+                Train_App.groupByType(bogies);
+        assertTrue(result.containsKey("Sleeper"));
+        assertTrue(result.containsKey("AC Chair"));
+        assertTrue(result.containsKey("First Class"));
     }
 
     @Test
-    void testFilter_CapacityEqualToThreshold() {
-        // Sleeper(72) is excluded since filter is strictly >
-        List<Train_App.Bogie> result =
-                Train_App.filterByCapacity(bogies, 72);
-        assertEquals(1, result.size());
-        assertEquals("General", result.get(0).name);
+    void testGrouping_MultipleBogiesInSameGroup() {
+        // Sleeper appears twice — both must be in the same group
+        Map<String, List<Train_App.Bogie>> result =
+                Train_App.groupByType(bogies);
+        assertEquals(2, result.get("Sleeper").size());
+        assertEquals(2, result.get("AC Chair").size());
     }
 
     @Test
-    void testFilter_CapacityLessThanThreshold() {
-        // threshold=100 excludes all bogies
-        List<Train_App.Bogie> result =
-                Train_App.filterByCapacity(bogies, 100);
-        assertTrue(result.isEmpty());
+    void testGrouping_DifferentBogieTypes() {
+        // Three distinct types must produce three separate keys
+        Map<String, List<Train_App.Bogie>> result =
+                Train_App.groupByType(bogies);
+        assertEquals(3, result.size());
     }
 
     @Test
-    void testFilter_MultipleBogiesMatching() {
-        // threshold=50: Sleeper(72) and General(90) both qualify
-        List<Train_App.Bogie> result =
-                Train_App.filterByCapacity(bogies, 50);
-        assertEquals(2, result.size());
-    }
-
-    @Test
-    void testFilter_NoBogiesMatching() {
-        // threshold=200: no bogie qualifies
-        List<Train_App.Bogie> result =
-                Train_App.filterByCapacity(bogies, 200);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void testFilter_AllBogiesMatching() {
-        // threshold=0: all bogies qualify
-        List<Train_App.Bogie> result =
-                Train_App.filterByCapacity(bogies, 0);
-        assertEquals(4, result.size());
-    }
-
-    @Test
-    void testFilter_EmptyBogieList() {
-        // Filtering an empty list returns empty list without error
+    void testGrouping_EmptyBogieList() {
+        // Grouping an empty list must return an empty Map without errors
         List<Train_App.Bogie> emptyList = new ArrayList<>();
-        List<Train_App.Bogie> result =
-                Train_App.filterByCapacity(emptyList, 60);
+        Map<String, List<Train_App.Bogie>> result =
+                Train_App.groupByType(emptyList);
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void testFilter_OriginalListUnchanged() {
-        // Original list must remain intact after stream processing
+    void testGrouping_SingleBogieCategory() {
+        // Only one bogie type — Map must contain exactly one key
+        List<Train_App.Bogie> singleType = new ArrayList<>();
+        singleType.add(new Train_App.Bogie("Sleeper", 72));
+        singleType.add(new Train_App.Bogie("Sleeper", 70));
+        Map<String, List<Train_App.Bogie>> result =
+                Train_App.groupByType(singleType);
+        assertEquals(1, result.size());
+        assertTrue(result.containsKey("Sleeper"));
+    }
+
+    @Test
+    void testGrouping_MapContainsCorrectKeys() {
+        // Verify all expected bogie type keys exist in the Map
+        Map<String, List<Train_App.Bogie>> result =
+                Train_App.groupByType(bogies);
+        assertTrue(result.containsKey("Sleeper"));
+        assertTrue(result.containsKey("AC Chair"));
+        assertTrue(result.containsKey("First Class"));
+    }
+
+    @Test
+    void testGrouping_GroupSizeValidation() {
+        // Sleeper group = 2, AC Chair group = 2, First Class group = 1
+        Map<String, List<Train_App.Bogie>> result =
+                Train_App.groupByType(bogies);
+        assertEquals(2, result.get("Sleeper").size());
+        assertEquals(2, result.get("AC Chair").size());
+        assertEquals(1, result.get("First Class").size());
+    }
+
+    @Test
+    void testGrouping_OriginalListUnchanged() {
+        // Original list must remain intact after grouping
         int originalSize = bogies.size();
-        Train_App.filterByCapacity(bogies, 60);
+        Train_App.groupByType(bogies);
         assertEquals(originalSize, bogies.size());
         assertEquals("Sleeper",     bogies.get(0).name);
         assertEquals("AC Chair",    bogies.get(1).name);
         assertEquals("First Class", bogies.get(2).name);
-        assertEquals("General",     bogies.get(3).name);
+        assertEquals("Sleeper",     bogies.get(3).name);
+        assertEquals("AC Chair",    bogies.get(4).name);
     }
 }
