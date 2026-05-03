@@ -1,32 +1,47 @@
+import java.util.Arrays;
+
 /**
  * ========================================================
  * MAIN CLASS - Train_App
  * ========================================================
  *
- * Use Case 18: Linear Search for Bogie ID
+ * Use Case 19: Binary Search for Bogie ID
  *
  * Description:
  * This class demonstrates searching for a specific bogie ID
- * using a simple Linear Search algorithm.
+ * using the Binary Search algorithm on sorted data.
  *
  * At this stage, the application:
- * - Creates an array of bogie IDs
- * - Accepts a search key
- * - Traverses array sequentially
- * - Stops when match is found
- * - Displays search result
+ * - Creates sorted bogie ID array
+ * - Defines search key
+ * - Applies binary search logic
+ * - Narrows search range each iteration
+ * - Displays result
  *
- * This maps basic searching logic using sequential traversal.
+ * This maps optimized searching logic using divide-and-conquer.
  *
  * @author Developer
- * @version 18.0
+ * @version 19.0
  */
 public class Train_App {
 
-    public static boolean linearSearch(String[] bogieIds, String searchId) {
-        for (String id : bogieIds) {
-            if (id.equals(searchId)) {
+    public static boolean binarySearch(String[] bogieIds, String key) {
+        // Sort before searching (precondition enforcement)
+        Arrays.sort(bogieIds);
+
+        int low = 0;
+        int high = bogieIds.length - 1;
+
+        while (low <= high) {
+            int mid = (low + high) / 2;
+            int cmp = bogieIds[mid].compareTo(key);
+
+            if (cmp == 0) {
                 return true;
+            } else if (cmp < 0) {
+                low = mid + 1;
+            } else {
+                high = mid - 1;
             }
         }
         return false;
@@ -34,32 +49,34 @@ public class Train_App {
 
     public static void main(String[] args) {
         System.out.println("==============================================");
-        System.out.println(" UC18 - Linear Search for Bogie ID");
-        System.out.println("==============================================");
-        System.out.println();
+        System.out.println(" UC19 - Binary Search for Bogie ID ");
+        System.out.println("==============================================\n");
 
-        // Create array of bogie IDs
+        // Create sorted array of bogie IDs
         String[] bogieIds = {"BG101", "BG205", "BG309", "BG412", "BG550"};
 
-        // Bogie ID to search
-        String searchId = "BG309";
+        // Ensure data is sorted before binary search (precondition)
+        Arrays.sort(bogieIds);
 
-        // Display all bogies
-        System.out.println("Available Bogie IDs:");
+        // Search key
+        String key = "BG309";
+
+        // Display available bogies
+        System.out.println("Sorted Bogie IDs:");
         for (String id : bogieIds) {
             System.out.println(id);
         }
 
         System.out.println();
 
-        // Linear search and display result
-        boolean found = linearSearch(bogieIds, searchId);
+        // Binary search and display result
+        boolean found = binarySearch(bogieIds, key);
         if (found) {
-            System.out.println("Bogie " + searchId + " found in train consist.");
+            System.out.println("Bogie " + key + " found using Binary Search.");
         } else {
-            System.out.println("Bogie " + searchId + " not found in train consist.");
+            System.out.println("Bogie " + key + " not found in train consist.");
         }
 
-        System.out.println("\nUC18 search completed...");
+        System.out.println("\nUC19 search completed...");
     }
 }

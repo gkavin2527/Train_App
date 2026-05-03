@@ -6,27 +6,38 @@ public class Train_AppTest {
     private final String[] bogieIds = {"BG101", "BG205", "BG309", "BG412", "BG550"};
 
     @Test
-    void testSearch_BogieFound() {
-        assertTrue(Train_App.linearSearch(bogieIds, "BG309"));
+    void testBinarySearch_BogieFound() {
+        assertTrue(Train_App.binarySearch(bogieIds.clone(), "BG309"));
     }
 
     @Test
-    void testSearch_BogieNotFound() {
-        assertFalse(Train_App.linearSearch(bogieIds, "BG999"));
+    void testBinarySearch_BogieNotFound() {
+        assertFalse(Train_App.binarySearch(bogieIds.clone(), "BG999"));
     }
 
     @Test
-    void testSearch_FirstElementMatch() {
-        assertTrue(Train_App.linearSearch(bogieIds, "BG101"));
+    void testBinarySearch_FirstElementMatch() {
+        assertTrue(Train_App.binarySearch(bogieIds.clone(), "BG101"));
     }
 
     @Test
-    void testSearch_LastElementMatch() {
-        assertTrue(Train_App.linearSearch(bogieIds, "BG550"));
+    void testBinarySearch_LastElementMatch() {
+        assertTrue(Train_App.binarySearch(bogieIds.clone(), "BG550"));
     }
 
     @Test
-    void testSearch_SingleElementArray() {
-        assertTrue(Train_App.linearSearch(new String[]{"BG101"}, "BG101"));
+    void testBinarySearch_SingleElementArray() {
+        assertTrue(Train_App.binarySearch(new String[]{"BG101"}, "BG101"));
+    }
+
+    @Test
+    void testBinarySearch_EmptyArray() {
+        assertFalse(Train_App.binarySearch(new String[]{}, "BG101"));
+    }
+
+    @Test
+    void testBinarySearch_UnsortedInputHandled() {
+        String[] unsorted = {"BG309", "BG101", "BG550", "BG205", "BG412"};
+        assertTrue(Train_App.binarySearch(unsorted, "BG205"));
     }
 }
