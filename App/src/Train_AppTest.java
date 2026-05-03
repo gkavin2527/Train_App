@@ -1,41 +1,32 @@
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import java.util.Arrays;
 
 public class Train_AppTest {
 
+    private final String[] bogieIds = {"BG101", "BG205", "BG309", "BG412", "BG550"};
+
     @Test
-    void testSort_BasicAlphabeticalSorting() {
-        String[] arr = {"Sleeper", "AC Chair", "First Class", "General", "Luxury"};
-        Train_App.sortBogieNames(arr);
-        assertArrayEquals(new String[]{"AC Chair", "First Class", "General", "Luxury", "Sleeper"}, arr);
+    void testSearch_BogieFound() {
+        assertTrue(Train_App.linearSearch(bogieIds, "BG309"));
     }
 
     @Test
-    void testSort_UnsortedInput() {
-        String[] arr = {"Luxury", "General", "Sleeper", "AC Chair"};
-        Train_App.sortBogieNames(arr);
-        assertArrayEquals(new String[]{"AC Chair", "General", "Luxury", "Sleeper"}, arr);
+    void testSearch_BogieNotFound() {
+        assertFalse(Train_App.linearSearch(bogieIds, "BG999"));
     }
 
     @Test
-    void testSort_AlreadySortedArray() {
-        String[] arr = {"AC Chair", "First Class", "General"};
-        Train_App.sortBogieNames(arr);
-        assertArrayEquals(new String[]{"AC Chair", "First Class", "General"}, arr);
+    void testSearch_FirstElementMatch() {
+        assertTrue(Train_App.linearSearch(bogieIds, "BG101"));
     }
 
     @Test
-    void testSort_DuplicateBogieNames() {
-        String[] arr = {"Sleeper", "AC Chair", "Sleeper", "General"};
-        Train_App.sortBogieNames(arr);
-        assertArrayEquals(new String[]{"AC Chair", "General", "Sleeper", "Sleeper"}, arr);
+    void testSearch_LastElementMatch() {
+        assertTrue(Train_App.linearSearch(bogieIds, "BG550"));
     }
 
     @Test
-    void testSort_SingleElementArray() {
-        String[] arr = {"Sleeper"};
-        Train_App.sortBogieNames(arr);
-        assertArrayEquals(new String[]{"Sleeper"}, arr);
+    void testSearch_SingleElementArray() {
+        assertTrue(Train_App.linearSearch(new String[]{"BG101"}, "BG101"));
     }
 }
