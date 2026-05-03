@@ -4,11 +4,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
- * Test class for Train_App (UC9)
- * Verifies Stream groupingBy behavior across all scenarios.
+ * Test class for Train_App (UC10)
+ * Verifies Stream reduce() aggregation behavior across all scenarios.
  */
 public class Train_AppTest {
 
@@ -17,92 +16,72 @@ public class Train_AppTest {
     @BeforeEach
     void setUp() {
         // Fresh bogie list before each test
+        // Total = 72 + 56 + 24 + 70 = 222
         bogies = new ArrayList<>();
         bogies.add(new Train_App.Bogie("Sleeper",     72));
         bogies.add(new Train_App.Bogie("AC Chair",    56));
         bogies.add(new Train_App.Bogie("First Class", 24));
         bogies.add(new Train_App.Bogie("Sleeper",     70));
-        bogies.add(new Train_App.Bogie("AC Chair",    60));
     }
 
     @Test
-    void testGrouping_BogiesGroupedByType() {
-        // Bogies with same name must appear under same Map key
-        Map<String, List<Train_App.Bogie>> result =
-                Train_App.groupByType(bogies);
-        assertTrue(result.containsKey("Sleeper"));
-        assertTrue(result.containsKey("AC Chair"));
-        assertTrue(result.containsKey("First Class"));
+    void testReduce_TotalSeatCalculation() {
+        // 72 + 56 + 24 + 70 = 222
+        int total = Train_App.getTotalSeatingCapacity(bogies);
+        assertEquals(222, total);
     }
 
     @Test
-    void testGrouping_MultipleBogiesInSameGroup() {
-        // Sleeper appears twice — both must be in the same group
-        Map<String, List<Train_App.Bogie>> result =
-                Train_App.groupByType(bogies);
-        assertEquals(2, result.get("Sleeper").size());
-        assertEquals(2, result.get("AC Chair").size());
+    void testReduce_MultipleBogiesAggregation() {
+        // All four bogies must contribute to the total
+        int total = Train_App.getTotalSeatingCapacity(bogies);
+        assertEquals(222, total);
     }
 
     @Test
-    void testGrouping_DifferentBogieTypes() {
-        // Three distinct types must produce three separate keys
-        Map<String, List<Train_App.Bogie>> result =
-                Train_App.groupByType(bogies);
-        assertEquals(3, result.size());
+    void testReduce_SingleBogieCapacity() {
+        // Single bogie: total must equal that bogie's capacity
+        List<Train_App.Bogie> single = new ArrayList<>();
+        single.add(new Train_App.Bogie("Sleeper", 72));
+        int total = Train_App.getTotalSeatingCapacity(single);
+        assertEquals(72, total);
     }
 
     @Test
-    void testGrouping_EmptyBogieList() {
-        // Grouping an empty list must return an empty Map without errors
+    void testReduce_EmptyBogieList() {
+        // Empty list: reduce identity value (0) must be returned
         List<Train_App.Bogie> emptyList = new ArrayList<>();
-        Map<String, List<Train_App.Bogie>> result =
-                Train_App.groupByType(emptyList);
-        assertTrue(result.isEmpty());
+        int total = Train_App.getTotalSeatingCapacity(emptyList);
+        assertEquals(0, total);
     }
 
     @Test
-    void testGrouping_SingleBogieCategory() {
-        // Only one bogie type — Map must contain exactly one key
-        List<Train_App.Bogie> singleType = new ArrayList<>();
-        singleType.add(new Train_App.Bogie("Sleeper", 72));
-        singleType.add(new Train_App.Bogie("Sleeper", 70));
-        Map<String, List<Train_App.Bogie>> result =
-                Train_App.groupByType(singleType);
-        assertEquals(1, result.size());
-        assertTrue(result.containsKey("Sleeper"));
+    void testReduce_CorrectCapacityExtraction() {
+        // Verify map() extracts correct values before reduction
+        // Manual sum: 72 + 56 + 24 + 70 = 222
+        int expectedTotal = 72 + 56 + 24 + 70;
+        int total = Train_App.getTotalSeatingCapacity(bogies);
+        assertEquals(expectedTotal, total);
     }
 
     @Test
-    void testGrouping_MapContainsCorrectKeys() {
-        // Verify all expected bogie type keys exist in the Map
-        Map<String, List<Train_App.Bogie>> result =
-                Train_App.groupByType(bogies);
-        assertTrue(result.containsKey("Sleeper"));
-        assertTrue(result.containsKey("AC Chair"));
-        assertTrue(result.containsKey("First Class"));
+    void testReduce_AllBogiesIncluded() {
+        // Add extra bogie and verify it is included in the total
+        bogies.add(new Train_App.Bogie("General", 100));
+        // New total = 222 + 100 = 322
+        int total = Train_App.getTotalSeatingCapacity(bogies);
+        assertEquals(322, total);
     }
 
     @Test
-    void testGrouping_GroupSizeValidation() {
-        // Sleeper group = 2, AC Chair group = 2, First Class group = 1
-        Map<String, List<Train_App.Bogie>> result =
-                Train_App.groupByType(bogies);
-        assertEquals(2, result.get("Sleeper").size());
-        assertEquals(2, result.get("AC Chair").size());
-        assertEquals(1, result.get("First Class").size());
-    }
-
-    @Test
-    void testGrouping_OriginalListUnchanged() {
-        // Original list must remain intact after grouping
+    void testReduce_OriginalListUnchanged() {
+        // Original list must remain intact after stream aggregation
         int originalSize = bogies.size();
-        Train_App.groupByType(bogies);
+        Train_App.getTotalSeatingCapacity(bogies);
         assertEquals(originalSize, bogies.size());
         assertEquals("Sleeper",     bogies.get(0).name);
         assertEquals("AC Chair",    bogies.get(1).name);
         assertEquals("First Class", bogies.get(2).name);
         assertEquals("Sleeper",     bogies.get(3).name);
-        assertEquals("AC Chair",    bogies.get(4).name);
     }
 }
