@@ -4,49 +4,37 @@ import static org.junit.jupiter.api.Assertions.*;
 public class Train_AppTest {
 
     @Test
-    void testException_ValidCapacityCreation() throws Train_App.InvalidCapacityException {
-        Train_App.PassengerBogie bogie = new Train_App.PassengerBogie("Sleeper", 72);
-        assertNotNull(bogie);
+    void testSort_BasicSorting() {
+        int[] arr = {72, 56, 24, 70, 60};
+        Train_App.bubbleSort(arr);
+        assertArrayEquals(new int[]{24, 56, 60, 70, 72}, arr);
     }
 
     @Test
-    void testException_NegativeCapacityThrowsException() {
-        assertThrows(Train_App.InvalidCapacityException.class, () -> {
-            new Train_App.PassengerBogie("Sleeper", -10);
-        });
+    void testSort_AlreadySortedArray() {
+        int[] arr = {24, 56, 60, 70, 72};
+        Train_App.bubbleSort(arr);
+        assertArrayEquals(new int[]{24, 56, 60, 70, 72}, arr);
     }
 
     @Test
-    void testException_ZeroCapacityThrowsException() {
-        assertThrows(Train_App.InvalidCapacityException.class, () -> {
-            new Train_App.PassengerBogie("AC Chair", 0);
-        });
+    void testSort_DuplicateValues() {
+        int[] arr = {72, 56, 56, 24};
+        Train_App.bubbleSort(arr);
+        assertArrayEquals(new int[]{24, 56, 56, 72}, arr);
     }
 
     @Test
-    void testException_ExceptionMessageValidation() {
-        Train_App.InvalidCapacityException ex = assertThrows(
-                Train_App.InvalidCapacityException.class, () -> {
-                    new Train_App.PassengerBogie("First Class", 0);
-                }
-        );
-        assertEquals("Capacity must be greater than zero", ex.getMessage());
+    void testSort_SingleElementArray() {
+        int[] arr = {50};
+        Train_App.bubbleSort(arr);
+        assertArrayEquals(new int[]{50}, arr);
     }
 
     @Test
-    void testException_ObjectIntegrityAfterCreation() throws Train_App.InvalidCapacityException {
-        Train_App.PassengerBogie bogie = new Train_App.PassengerBogie("First Class", 48);
-        assertEquals("First Class", bogie.getType());
-        assertEquals(48, bogie.getCapacity());
-    }
-
-    @Test
-    void testException_MultipleValidBogiesCreation() throws Train_App.InvalidCapacityException {
-        Train_App.PassengerBogie b1 = new Train_App.PassengerBogie("Sleeper", 72);
-        Train_App.PassengerBogie b2 = new Train_App.PassengerBogie("AC Chair", 60);
-        Train_App.PassengerBogie b3 = new Train_App.PassengerBogie("First Class", 48);
-        assertNotNull(b1);
-        assertNotNull(b2);
-        assertNotNull(b3);
+    void testSort_AllEqualValues() {
+        int[] arr = {40, 40, 40};
+        Train_App.bubbleSort(arr);
+        assertArrayEquals(new int[]{40, 40, 40}, arr);
     }
 }
