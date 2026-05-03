@@ -1,83 +1,82 @@
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * ========================================================
- * MAIN CLASS - UseCase7TrainConsistMgmnt
+ * MAIN CLASS - Train_App
  * ========================================================
  *
- * Use Case 7: Sort Bogies by Capacity (Comparator)
+ * Use Case 8: Filter Passenger Bogies Using Streams
  *
  * Description:
- * This class sorts passenger bogies based on seating
- * capacity using a custom Comparator.
+ * This class filters passenger bogies based on seating
+ * capacity using Java Stream API.
  *
  * At this stage, the application:
- * - Creates bogie objects
- * - Stores them in a list
- * - Displays unsorted data
- * - Sorts using Comparator logic
- * - Displays sorted result
+ * - Creates a list of bogies
+ * - Converts list into stream
+ * - Applies filter condition
+ * - Collects filtered result
+ * - Displays qualifying bogies
  *
- * This maps custom ordering using Comparator.
+ * This maps functional filtering using Streams.
  *
  * @author Developer
- * @version 7.0
+ * @version 8.0
  */
 public class Train_App {
 
-    // ---- Inner Bogie class to model passenger bogies ----
+    // ---- Reusing Bogie model from UC7 ----
     static class Bogie {
         String name;
         int capacity;
 
-        // Constructor to initialize bogie name and capacity
         Bogie(String name, int capacity) {
             this.name     = name;
             this.capacity = capacity;
         }
 
-        // toString() for clean display output
         @Override
         public String toString() {
             return name + " -> " + capacity;
         }
     }
 
+    // ---- Reusable filter method for testability ----
+    // Accepts a list and threshold, returns filtered list
+    // Original list is NOT modified (stream creates a new list)
+    public static List<Bogie> filterByCapacity(List<Bogie> bogies, int threshold) {
+        return bogies.stream()                             // Convert list to Stream
+                .filter(b -> b.capacity > threshold)  // Keep only bogies above threshold
+                .collect(Collectors.toList());         // Collect result into new List
+    }
+
     public static void main(String[] args) {
 
         // Display welcome banner
         System.out.println("============================================");
-        System.out.println(" UC7 - Sort Bogies by Capacity (Comparator) ");
+        System.out.println(" UC8 - Filter Passenger Bogies Using Streams ");
         System.out.println("============================================\n");
 
         // Create list of passenger bogies
         List<Bogie> bogies = new ArrayList<>();
-
-        // ---- ADD bogie objects with name and capacity ----
         bogies.add(new Bogie("Sleeper",     72));
         bogies.add(new Bogie("AC Chair",    56));
         bogies.add(new Bogie("First Class", 24));
         bogies.add(new Bogie("General",     90));
 
-        // ---- DISPLAY unsorted bogies ----
-        System.out.println("Before Sorting:");
-        for (Bogie b : bogies) {
-            System.out.println(b);
-        }
+        // ---- DISPLAY all bogies before filtering ----
+        System.out.println("All Bogies:");
+        bogies.forEach(System.out::println);
 
-        // ---- SORT using Comparator by capacity (ascending) ----
-        // Comparator.comparingInt() extracts the int field to compare
-        // Lambda: (b) -> b.capacity tells Java what field to sort on
-        bogies.sort(Comparator.comparingInt(b -> b.capacity));
+        // ---- FILTER bogies with capacity > 60 ----
+        List<Bogie> filteredBogies = filterByCapacity(bogies, 60);
 
-        // ---- DISPLAY sorted bogies ----
-        System.out.println("\nAfter Sorting by Capacity:");
-        for (Bogie b : bogies) {
-            System.out.println(b);
-        }
+        // ---- DISPLAY filtered results ----
+        System.out.println("\nFiltered Bogies (Capacity > 60):");
+        filteredBogies.forEach(System.out::println);
 
-        System.out.println("\nUC7 sorting completed...");
+        System.out.println("\nUC8 filtering completed...");
     }
 }
