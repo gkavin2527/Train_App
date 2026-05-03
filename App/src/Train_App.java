@@ -23,7 +23,7 @@ import java.util.List;
  * @author Developer
  * @version 4.0
  */
-public class UseCase4TrainConsistMgmnt {
+public class Train_App {
 
     public static void main(String[] args) {
 
