@@ -3,41 +3,36 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class Train_AppTest {
 
-    private final String[] bogieIds = {"BG101", "BG205", "BG309", "BG412", "BG550"};
-
     @Test
-    void testBinarySearch_BogieFound() {
-        assertTrue(Train_App.binarySearch(bogieIds.clone(), "BG309"));
+    void testSearch_ThrowsExceptionWhenEmpty() {
+        assertThrows(IllegalStateException.class, () -> {
+            Train_App.searchBogie(new String[]{}, "BG101");
+        });
     }
 
     @Test
-    void testBinarySearch_BogieNotFound() {
-        assertFalse(Train_App.binarySearch(bogieIds.clone(), "BG999"));
+    void testSearch_AllowsSearchWhenDataExists() {
+        assertDoesNotThrow(() -> {
+            Train_App.searchBogie(new String[]{"BG101", "BG205"}, "BG101");
+        });
     }
 
     @Test
-    void testBinarySearch_FirstElementMatch() {
-        assertTrue(Train_App.binarySearch(bogieIds.clone(), "BG101"));
+    void testSearch_BogieFoundAfterValidation() {
+        assertTrue(Train_App.searchBogie(
+                new String[]{"BG101", "BG205", "BG309"}, "BG205"
+        ));
     }
 
     @Test
-    void testBinarySearch_LastElementMatch() {
-        assertTrue(Train_App.binarySearch(bogieIds.clone(), "BG550"));
+    void testSearch_BogieNotFoundAfterValidation() {
+        assertFalse(Train_App.searchBogie(
+                new String[]{"BG101", "BG205", "BG309"}, "BG999"
+        ));
     }
 
     @Test
-    void testBinarySearch_SingleElementArray() {
-        assertTrue(Train_App.binarySearch(new String[]{"BG101"}, "BG101"));
-    }
-
-    @Test
-    void testBinarySearch_EmptyArray() {
-        assertFalse(Train_App.binarySearch(new String[]{}, "BG101"));
-    }
-
-    @Test
-    void testBinarySearch_UnsortedInputHandled() {
-        String[] unsorted = {"BG309", "BG101", "BG550", "BG205", "BG412"};
-        assertTrue(Train_App.binarySearch(unsorted, "BG205"));
+    void testSearch_SingleElementValidCase() {
+        assertTrue(Train_App.searchBogie(new String[]{"BG101"}, "BG101"));
     }
 }
